@@ -1,0 +1,203 @@
+\newcommand{\artefact}[5]{ % {pos}{size}{name}{background colour}{border colour}
+    \node[rectangle, minimum height=#2, minimum width=0.6*#2, thick, fill=#4, draw=#5, rounded corners=0.1*#2] (#3) at #1 {};
+    \foreach \y in {.2, .4, .6, .8} {
+        \draw[#5, line width=#2/12] ($(#3.south west)!\y!(#3.north west)+(#2/7,0)$) -- ($(#3.south east)!\y!(#3.north east)+(-#2/7,0)$);
+    }%
+}
+\newcommand{\envelope}[3]{%
+    \draw[fill=white, rounded corners=#2/15] ($(#1)+(0,#2/2)$) -- ++($(#2/2,3*#2/10)$) -- ++($(#2/2,-3*#2/10)$);
+    \draw[fill=myred!60] ($(#1)+(#2/10,0)$) rectangle ($(#1)+(9*#2/10,3*#2/5)$);
+    \draw[fill=white, join=round] (#1) -- ++(0,#2/2) -- ++(#2/3,-#2/4) -- cycle
+    -- ++(#2/3,#2/4) -- ++(#2/3,0) -- ++(#2/3,-#2/4) -- cycle
+    -- ++(#2,0) -- ++(0,#2/2) -- ++(-#2/3,-#2/4) -- ++(#2/3,-#2/4);
+
+    \node[minimum width=#2, minimum height=3*#2/4] (#3) at (#1) {};
+}
+\newcommand{\circled}[1]{\tikz[baseline=(char.base)]\node[draw, solid, circle, inner sep=1pt] (char) {\small #1};}
+\newcommand{\arrowdist}{0.05}
+
+
+% \gear command adapted from StackExhange answer by Alain Matthes: https://tex.stackexchange.com/a/58735
+% #1 number of teeths
+% #2 radius intern
+% #3 radius extern
+% #4 angle from start to end of the first arc
+% #5 angle to decale the second arc from the first
+\newcommand{\gear}[6]{%
+    \foreach \i in {1,...,#1} {%
+        [rotate=\i*360/#1 + #4/2]  (0:#2)  arc (0:#4:#2) {[rounded corners=#2pt]
+        -- (#4+#5:#3)  arc (#4+#5:360/#1-#5:#3)} --  (360/#1:#2)
+    }}
+
+%
+\begin{tikzpicture}[
+arrow/.style={line width=2pt, -{stealth}}
+]
+
+\node[anchor=base, align=center, rotate=90] (ml-label) at (0,1.5) {Mailing\\[-2pt]Lists};
+\node[anchor=base, align=center, rotate=90] (st-label) at (0,0) {Source\\[-2pt]Tree};
+\node[anchor=base, align=center, rotate=90] (mi-label) at (-1.5,-1.5) {Maintainers\\[-2pt]Information};
+
+% Mailing lists
+% \node[draw, fill=white, rectangle, minimum size=0.4cm] (ml1) at (0.8,1.5) {};
+% \node[draw, fill=white, rectangle, minimum size=0.4cm] (ml2) at ($(ml1)+(0.1cm,-0.1cm)$) {};
+% \node[draw, fill=white, rectangle, minimum size=0.4cm] (ml3) at ($(ml2)+(0.1cm,-0.1cm)$) {};
+\envelope{0.5,1.5}{0.4cm}{ml1}
+\envelope{$(ml1)+(0.1cm,-0.1cm)$}{0.4cm}{ml2}
+\envelope{$(ml2)+(0.1cm,-0.1cm)$}{0.4cm}{ml3}
+
+% Source Tree
+\artefact{(0.9,-0.5)}{10pt}{c11}{blue!30}{blue!60}
+\foreach \x/\n in {-0.4/1,0/2,0.4/3} {
+    \artefact{(0.9+\x,0)}{10pt}{c2\n}{blue!30}{blue!60}
+}
+\foreach \x/\n in {-0.6/1,-0.2/2} {
+    \artefact{(0.9+\x,0.5)}{10pt}{c3\n}{blue!30}{blue!60}
+}
+\coordinate (above-c11) at ($(c11.north)!.5!(c22.south)$);
+\coordinate (c3mid) at ($(c32.west)!.5!(c31.east)$);
+\draw[thick, blue!60] (c11) -- (c22)
+(c11) -- (above-c11) -| (c21)
+(c11) -- (above-c11) -| (c23)
+(c21) -- ($(c3mid)!.5!(c21)$) -| (c31)
+(c21) -- ($(c3mid)!.5!(c21)$) -| (c32);
+
+%% Maintainers Information
+%\artefact{(0.9,-1.5)}{20pt}{m-inf}{orange!30}{orange!60}
+%%%%%%%%%%%%%%%%%%%%%%%%%%% Maintainer file %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tikzset{
+    lst/.style={inner sep=0.3cm, font=\tiny\ttfamily, align=left},
+    maintainer/.style={minimum size=0.1cm, scale=0.5},
+    resp-box/.style={dashed, thick}
+}
+
+\begin{scope}[scale=0.8, transform shape]
+    \node[lst] (lst-A) at (0,-1.7) {
+        SECTION --\\[-2pt]
+        ---------------------------\\[-3pt]
+        ---------------------------
+    };
+
+    \node[lst, below=-0.35cm of lst-A.south west, anchor=north west] (lst-B) {
+        SECTION --\\[-2pt]
+        ---------------------------\\[-3pt]
+        ---------------------------
+    };
+
+% People
+\node[alice, shirt=myblue, left=-0.1cm of lst-A, maintainer] (alice) {};
+\node[bob, mirrored, shirt=mygreen, maintainer] (bob) at ($(lst-B.east)+(-0.05cm,0.15cm)$) {};
+\node[person, female, mirrored, shirt=mygreen, below=0.07cm of bob, maintainer] (eve) {};
+
+% File
+\coordinate (file-nw) at ($(lst-A.north west)+(0.2,-0.15)$);
+\coordinate (file-sw) at ($(file-nw |- lst-B.south)+(0,0.1)$);
+\coordinate (file-se) at ($(lst-B.south east |- file-sw)+(-0.2,0)$);
+\coordinate (file-south) at ($(file-sw)!.5!(file-se)$);
+\begin{scope}[on background layer]
+    \draw[fill=gray!7, on background layer] (file-nw) -- (file-sw) -- (file-se) |- cycle;
+\end{scope}
+
+% "Responsibility" boxes
+\draw[resp-box, myblue] ($(alice.north west)+(-0.1cm,0.15cm)$) rectangle ($(lst-A.south east)+(-0.25cm,0.3cm)$);
+\draw[resp-box, mygreen] ($(bob.north east)+(0.07cm,0.05cm)$) rectangle ($(eve -| lst-B.south west)+(0.25cm,-0.15cm)$);
+
+\end{scope}
+
+
+%%% Brackets
+\coordinate (l-bracket-x) at (1.3,0);
+\coordinate (r-bracket-x) at (1.4,0);
+\draw[usecaseclr,thick] ($(ml1.north -| l-bracket-x)+(0,0.1)$) -- ++(0.2,0) |- (c11.south -| l-bracket-x);
+\draw[methodologyclr,thick] (c32.north -| r-bracket-x) -- ++(0.2,0) |- ($(eve.south -| r-bracket-x)+(0,-0.1)$);
+
+
+%%% PaStA
+\node[draw, rectangle, fill=white, rotate=90, minimum width=4cm, anchor=north] at ($(c22.east)+(1.0,-0.15)$) (pasta) {Socio-Technical Distillation};
+
+\coordinate (pasta-arrows-start) at ($(r-bracket-x)+(0.2+\arrowdist,0)$);
+\coordinate (pasta-arrows-end) at ($(pasta.north)+(-\arrowdist,0)$);
+\draw[arrow,usecaseclr] (ml2 -| pasta-arrows-start) -- (ml2 -| pasta-arrows-end);
+\draw[arrow,methodologyclr] (bob.north -| pasta-arrows-start) -- (bob.north -| pasta-arrows-end);
+
+
+%%% Macro View
+\begin{scope}[xshift=3.7cm, yshift=-1.4cm, scale=0.6, transform shape]
+    \node[circle,draw,very thick,fill=myblue!70,inner sep=9pt] (a) at (0,0) {A};
+    \node[circle,draw,very thick,fill=mygreen!70,inner sep=5pt] (y) at (-0.8,1.3) {Y};
+    \node[circle,draw,very thick,fill=myred!60,inner sep=5pt] (d) at (0.8,1.3) {D};
+    \draw (a)--(d);
+    \draw[line width=3pt] (a)--(y);
+\end{scope}
+\node[below=0.07 of a] (mv-label) {Macro View};
+
+\draw[arrow,methodologyclr] ($(pasta.south |- a.north)+(\arrowdist,0)$) -- (y.west |- a.north);
+
+%%% Conformance analysis
+\node[draw, rectangle, rotate=90, align=center, anchor=east] (conf-an) at ($(pasta.east)+(3.3,0)$) {Conformance\\Analysis};
+\draw[arrow,usecaseclr] ($(pasta.south)+(\arrowdist,1.5)$) -- ($(conf-an.north |- pasta.south)+(-\arrowdist,1.5)$);
+
+
+%%% Results
+\node[draw,rectangle,minimum width=1cm,minimum height=1.2cm,anchor=south] (results) at ($(conf-an.west)+(1.4,0)$) {};
+\node[above=0 of results] {Results};
+
+\draw[results-cluster,thick] ($(results.west)+(0,-0.1)$)
+-- ++(0.1,0)
+-- ++(0.1,-0.1)
+-- ++(0.1,0.2)
+-- ++(0.1,0.1)
+-- ++(0.1,-0.1)
+-- ++(0.1,0)
+-- ++(0.1,0)
+-- ++(0.1,-0.1)
+-- ++(0.1,0.2)
+-- ++(0.1,0.1);
+\draw[results-section,thick] ($(results.west)+(0,-0.2)$)
+-- ++(0.1,0)
+-- ++(0.1,-0.1)
+-- ++(0.1,0.2)
+-- ++(0.1,0.1)
+-- ++(0.1,-0.1)
+-- ++(0.1,0)
+-- ++(0.1,0)
+-- ++(0.1,-0.1)
+-- ++(0.1,0.2)
+-- ++(0.1,0.1);
+
+
+%%% Boxed areas
+\begin{scope}[on background layer]
+    \draw[methodologyclr,very thick,dashed] ($(st-label.north |- c31.north)+(-1.8,0.2)$) -| node[black,below left] (methodology) {\circled{1} Methodology}
+    ($(d.east |- mi-label.west)+(0.3,0)$) -|
+    cycle;
+    \draw[usecaseclr,very thick,dashed]  ($(ml-label.north east)+(-2,-0.05)$) -| node[black,below left] {\circled{2} Use Case}
+    ($(results.east |- mi-label.west)+(0.15,-0.15)$) -|
+    cycle;
+\end{scope}
+
+\draw[arrow,methodologyclr] ($(methodology.east)+(-1pt,0)$) -- ($(conf-an.north |- methodology.east)+(-\arrowdist,0)$);
+\draw[arrow] ($(conf-an.south |- methodology)+(\arrowdist,0)$) -- ($(results.west |- methodology)+(-\arrowdist,0)$);
+
+%%%%%%%%%%%%%%%%%%%% Cogwheels %%%%%%%%%%%%%%%%%%%%%%%
+\tikzset {
+    coglabel/.style={rotate=45, font=\scriptsize, align=center}
+}
+
+\begin{scope}[xshift=5.8cm, yshift=-0.85cm, transform canvas]
+    \draw \gear{12}{0.44}{0.55}{15}{3}{5,1};
+    \node (semantic) {\hyperref[sec:semantic_validation]{\tikz\node[coglabel] {Semantic};}};
+\end{scope}
+\begin{scope}[xshift=6.77cm, yshift=-1.25cm, transform canvas]
+    \draw \gear{12}{0.44}{0.55}{15}{3}{5,1};
+    \node (experts) {\hyperref[sec:maintainer_survey]{\tikz\node[coglabel] {Experts};}};
+\end{scope}
+\begin{scope}[xshift=5.95cm, yshift=-1.88cm, transform canvas]
+    \draw \gear{12}{0.44}{0.55}{15}{3}{5,1};
+    \node (algorithmic) {\hyperref[sec:algorithmic_validation]{\tikz\node[coglabel] {Algo-\\rithmic};}};
+\end{scope}
+
+\node[coglabel, fill=blue!20, opacity=0.7, text opacity=1] at ($(algorithmic)!.5!(experts)!.5!(semantic)+(-0.08,-0.08)$) {\circled{\scriptsize 3} Mixed-Method Validation};
+
+
+\end{tikzpicture}

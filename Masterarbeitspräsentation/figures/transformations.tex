@@ -1,0 +1,98 @@
+    \begin{subfigure}[t]{0.3\textwidth}
+        \centering
+        \begin{tikzpicture}[
+            remember picture,
+            baseline=(vC.south),
+            venn/.style={draw, circle, fill opacity=0.4, text opacity=1}
+        ]
+            \node[venn, minimum size=35pt] (vA) at (0,-1.9) {A};
+            \node[venn, minimum size=22pt] (vB) at ($(vA.south west) + (0.1,-6.5pt)$) {B};
+            \node[venn, minimum size=22pt] (vC) at ($(vA.south west) + (20pt,-7.5pt)$) {C};
+            
+            \node[venn, minimum size=35pt] (vY) at (-1.1,-1.5) {Y};
+            \node[venn, minimum size=22pt] (vZ) at ($(vY.west) + (-3pt,0pt)$) {Z};
+            \node[venn, minimum size=22pt] at ($(vY.north east) + (1.5pt,5pt)$) {X};
+            
+            \node[venn, minimum size=35pt] (vD) at (1.6,-1.5) {D};
+            \node[venn, minimum size=22pt] at ($(vD.north west) + (-2.5pt,4pt)$) {E};
+            \node[venn, minimum size=22pt] (vF) at ($(vA.north east) + (4pt,9pt)$) {F};
+
+            \draw (0,-1.7) ellipse (2.5cm and 1.35cm);
+            \node at ($(vZ |- vB)+(0,5pt)$) {R};
+        \end{tikzpicture}
+        \caption{Venn diagram of section overlap (\emph{\microv}).}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.3\textwidth}
+        \centering
+        \begin{tikzpicture}[
+            remember picture,
+            baseline=(v2C.south),
+            % venn/.style={draw=black!30, circle, fill opacity=0.4, text opacity=1}
+            venn/.style={draw=none, circle, fill opacity=0.4, text opacity=1}
+        ]
+            \newcommand{\venn}[3]{ %{position}{size}{content}
+                \node[venn, minimum size=#2] (v2#3) at #1 {};
+                % \node[inner sep=2pt] (l2#3) at (v2#3) {#3};
+                \node[inner sep=3pt] (l2#3) at (v2#3) {#3};
+            }
+        
+            \venn{(0,-4.7)}{43pt}{A}
+            \venn{($(v2A.south west) + (2pt,-3pt)$)}{14pt}{B}
+            \venn{($(v2A.south west) + (22pt,-7pt)$)}{14pt}{C}
+            \venn{(-1.4,-4.4)}{43pt}{Y}
+            \venn{($(v2Y.west) + (-2pt,0)$)}{14pt}{Z}
+            \venn{($(v2Y.north east) + (5pt,5pt)$)}{14}{X}
+            \venn{(2.0,-4.3)}{45}{D}
+            \venn{($(v2D.north west) + (0,4pt)$)}{14}{E}
+            \venn{($(v2A.north east) + (8pt,9pt)$)}{14}{F}
+            
+            \draw[black!60, ultra thick] 
+                (l2A)--(l2B) (l2A)--(l2C) 
+                (l2Y)--(l2X) (l2Y)--(l2Z)
+                (l2F)--(l2E) (l2E)--(l2D);
+            \draw[black!25, very thick] (l2A)--(l2Y) (l2A)--(l2F);
+            
+            % cell border
+            \draw[
+                every node/.style={sloped,anchor=south,near end},
+                ultra thick, dashed, red
+            ]
+                ($(v2A.north)+(0,-0.3cm)$) -- +(south west:1.8cm)
+                ($(v2A.north)+(0,-0.3cm)$) -- +(south east:1.8cm)
+                ($(v2A.north)+(0,-0.3cm)$) -- +(north:0.9cm);
+        \end{tikzpicture}
+        \caption{Abstracted \emph{network view}, with sections partitioned into cells.
+        % Ralf: Wenn wir die nächste Zeile weglassen, sparen wir eine Zeile Platz
+        %(separated by dashed lines)
+        }
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.3\textwidth}
+        \centering
+        \begin{tikzpicture}[
+            remember picture,
+            baseline=(a.south)
+        ]
+
+            \node[circle,draw,very thick,fill=myblue!70,inner sep=9pt] (a) at (0,0) {A};
+            \node[circle,draw,very thick,fill=mygreen!70,inner sep=5pt] (y) at (-0.8,1.3) {Y};
+            \node[circle,draw,very thick,fill=myred!60,inner sep=5pt] (d) at (0.8,1.3) {D};
+            \draw (a)--(d);
+            \draw[line width=3pt] (a)--(y);
+            
+        \end{tikzpicture}
+        \caption{Interpretable \emph{\macrov}.}
+    \end{subfigure}
+    %
+    % inter-picture connections
+    \begin{tikzpicture}[
+        overlay,
+        remember picture,
+        transformation/.style={black!75,dotted,-{Latex[scale=2]}},
+    ]
+        \draw[transformation,bend angle=20,bend right] ($(v2A)+(6pt,-4pt)$) to (a);
+        \draw[transformation,bend angle=22,bend left] ($(v2Y)+(6pt,3pt)$) to (y);
+        \draw[transformation,bend angle=20,bend right] ($(v2D)+(6pt,-3pt)$) to (d);
+    \end{tikzpicture}
+

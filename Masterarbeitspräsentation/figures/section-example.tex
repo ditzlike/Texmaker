@@ -1,0 +1,43 @@
+\begin{tikzpicture}[
+    lst/.style={inner sep=0.3cm, font=\footnotesize\ttfamily, align=left},
+    maintainer/.style={minimum size=0.5cm},
+    resp-box/.style={dashed, very thick}
+]
+    \node[lst] (lst-A) {
+        BUILDSYSTEM\\
+        \textbf{M}aintainer: Alice (alice@foo.com)\\
+        \textbf{L}ist: buildsystem@lists.project.org\\
+        \textbf{F}iles: Makefile, scripts/
+    };
+    
+    \node[lst, below=-0.17cm of lst-A.south west, anchor=north west] (lst-B) {
+        LOGGING\\
+        \textbf{M}aintainers: Bob (bob@doe.com)\\
+        ~~~~~~~~~~~~ Eve (eve@bar.org)\\
+        \textbf{L}ist: logging@lists.project.org\\
+        \textbf{F}iles: srcs/logging/*, scripts/debug.sh
+    };
+    
+    % People
+    \node[alice, shirt=myblue, left=0.2cm of lst-A, maintainer] (alice) {};
+    \node[bob, mirrored, shirt=mygreen, maintainer] (bob) at ($(lst-B.east)+(0.45cm,0.4cm)$) {};
+    \node[person, female, mirrored, shirt=mygreen, below=0.1cm of bob, maintainer] (eve) {};
+    
+    % File label
+    \node[font=\small, anchor=west] (file-label) at ($(lst-B.south west)+(0,-0.1cm)$) {MAINTAINERS file};
+    
+    % File
+    \coordinate (file-nw) at ($(lst-A.north west)$);
+    \coordinate (file-sw) at (file-label.south west);
+    \coordinate (file-se) at (lst-B.south east |- file-sw);
+    \begin{scope}[on background layer]
+            \draw[fill=gray!7, on background layer] (file-nw) -- (file-sw) -- ($(file-se)+(-0.4cm,0)$) -- ($(file-se)+(0,0.4cm)$) |- cycle;
+    \end{scope}
+    \draw[fill=gray!50] ($(file-se)+(0,0.4cm)$) -- +(-0.3cm,-0.1cm) -- ($(file-se)+(-0.4cm,0)$);
+    
+    % "Responsibility" boxes
+    \draw[resp-box, myblue] ($(alice.north west)+(-0.2cm,0.4cm)$) rectangle ($(lst-A.south east)+(0.3cm,0.15cm)$);
+    \node[myblue, right=0.6cm of lst-A, rotate=-90, align=center, anchor=south, font=\small] {Alice's\\[-0.25em]responsi-\\bilities};
+    \draw[resp-box, mygreen] ($(bob.north east)+(0.2cm,0.1cm)$) rectangle ($(eve -| lst-B.south west)+(0.2cm,-0.5cm)$);
+    \node[mygreen, left=0.05cm of lst-B, rotate=90, align=center, anchor=south, font=\small] {Bob's and\\[-0.1em]Eve's shared\\[-0.1em]responsibilities};
+\end{tikzpicture}
